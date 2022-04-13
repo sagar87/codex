@@ -135,11 +135,13 @@ class Slide:
         x_tile_size: int = 128,
         y_tile_size: int = 128,
         preprocess_tile: Callable = lambda x: x,
+        offset: Union[int, None] = None,
     ):
         self.img = img
         self.x_tile_size = x_tile_size
         self.y_tile_size = y_tile_size
         self.preprocess_tile = preprocess_tile
+        self.offset = offset
 
         self.tiles = defaultdict(dict)
 
@@ -154,6 +156,9 @@ class Slide:
         Splits the raw image into tiles. The oppposite of '_restore'.
         """
         img = self.img[CHANNEL_NUM[name], 0 if name == DEFAULT_CHANNEL else 1]
+
+        if self.offset is not None:
+            img = img[self.offset :, self.offset :]
 
         # if (x_tile_size is not None) and (y_tile_size is not None):
         x_tiles_cnt = img.shape[1] // self.x_tile_size
@@ -187,9 +192,11 @@ class Slide:
 
 
 class Codex(Segmentation, Slide):
-    def __init__(self, path, img, x_tile_size=128, y_tile_size=128):
+    def __init__(self, path, img, x_tile_size=128, y_tile_size=128, offset=None):
         Segmentation.__init__(self, path)
-        Slide.__init__(self, img, x_tile_size=x_tile_size, y_tile_size=y_tile_size)
+        Slide.__init__(
+            self, img, x_tile_size=x_tile_size, y_tile_size=y_tile_size, offset=offset
+        )
 
     def get_tile(self, x, y, name=DEFAULT_CHANNEL):
         if name in self.tiles.keys() and (x, y) in self.tiles[name]:

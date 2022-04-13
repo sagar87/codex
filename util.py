@@ -13,7 +13,7 @@ def clahe(img):
     return clahe.apply(img)
 
 
-def load_all_tma(tma):
+def load_all_tma(tma, tma_path, offset=None):
     current_tma = ""
     codex_slides = {}
 
@@ -32,11 +32,11 @@ def load_all_tma(tma):
 
     for i, row in tma.iterrows():
         # print(f"{row['TMA']}_{row['Row']}{row['Col']}")
-        seg_path = os.path.join(
-            f"/home/voehring/voehring/conda/segmentation/{row['TMA']}_{row['Row']}{row['Col']}_128"
-        )
+        seg_path = os.path.join(tma_path, f"{row['TMA']}_{row['Row']}{row['Col']}_128")
         segmentation[f"{row['TMA']}_{row['Row']}{row['Col']}"] = Codex(
-            seg_path, codex_slides[f"{row['TMA']}_{row['Row']}{row['Col']}"]
+            seg_path,
+            codex_slides[f"{row['TMA']}_{row['Row']}{row['Col']}"],
+            offset=offset,
         )
 
     return codex_slides, segmentation
