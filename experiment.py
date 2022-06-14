@@ -8,7 +8,7 @@ import numpy as np
 from skimage.color import rgba2rgb
 from stardist.plot import render_label
 
-from codex.helper import CHANNEL_NUM, DEFAULT_CHANNEL
+from codex.helper import CHANNEL_NUM, DEFAULT_CHANNEL, DEFAULT_SEGMENTATION
 
 
 def get_x_and_y(name):
@@ -113,7 +113,7 @@ class Segmentation:
     #     x: int,
     #     y: int,
     #     original: Union[None, np.ndarray] = None,
-    #     name: str = "lgbm_test_sub2",
+    #     name: str = DEFAULT_SEGMENTATION,
     #     to_rgb: bool = True,
     # ) -> np.ndarray:
     #     if original is None:
@@ -226,7 +226,7 @@ class Codex(Segmentation, Slide):
         x: int,
         y: int,
         name: Union[None, np.ndarray] = DEFAULT_CHANNEL,
-        segmentation: str = "lgbm_test_sub2",
+        segmentation: str = DEFAULT_SEGMENTATION,
         to_rgb: bool = True,
     ) -> np.ndarray:
         """
@@ -246,7 +246,7 @@ class Codex(Segmentation, Slide):
         x: int,
         y: int,
         name: Union[None, np.ndarray] = DEFAULT_CHANNEL,
-        segmentation: str = "lgbm_test_sub2",
+        segmentation: str = DEFAULT_SEGMENTATION,
         to_rgb: bool = True,
     ) -> np.ndarray:
         """
@@ -266,13 +266,13 @@ class Codex(Segmentation, Slide):
         Returns the ids from cells that touched the border of slide.
         """
         # Refactor (?)
-        x_max, y_max = np.array(list(self["lgbm_test_sub2"].keys())).max(axis=0)
+        x_max, y_max = np.array(list(self[DEFAULT_SEGMENTATION].keys())).max(axis=0)
 
         long_tiles = []
         for y in range(y_max + 1):
             long_tiles.append([])
             for x in range(x_max + 1):
-                tile = np.zeros_like(self.get_tile(x, y, name="lgbm_test_sub2"))
+                tile = np.zeros_like(self.get_tile(x, y, name=DEFAULT_SEGMENTATION))
                 # print(tile.shape)
                 tile[0, :] = 1
                 tile[-1, :] = 1
@@ -283,7 +283,7 @@ class Codex(Segmentation, Slide):
         long_tiles = [np.hstack(i) for i in long_tiles]
         full_tiles = np.vstack(long_tiles)
         m, n = np.where(full_tiles == 1)
-        slide = self.get_slide("lgbm_test_sub2")
+        slide = self.get_slide(DEFAULT_SEGMENTATION)
 
         cell_ids = np.unique(slide[m, n])
         return cell_ids[cell_ids > 0]

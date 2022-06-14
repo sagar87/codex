@@ -62,12 +62,22 @@ META = (
     .dropna()
 )
 
-TMA = pd.read_csv(
-    "/home/voehring/voehring/projects/2022-02-18_codex/Montage_key-Table 1.csv", sep=";"
-).iloc[:, :11]
+TMA = (
+    pd.read_csv(
+        "/home/voehring/voehring/projects/2022-02-18_codex/Montage_key-Table 1.csv",
+        sep=";",
+    )
+    .iloc[:, :11]
+    .assign(
+        Name=lambda df: df.apply(
+            lambda row: f"{row['TMA']}_{row['Row']}{row['Col']}", 1
+        )
+    )
+)
 
 
 DEFAULT_CHANNEL = "Hoechst"
+DEFAULT_SEGMENTATION = "lgbm_test_sub2"
 NUM_CHANNEL = {i: marker for i, marker in enumerate(CHANNELS.marker.tolist())}
 CHANNEL_NUM = {marker: i for i, marker in enumerate(CHANNELS.marker.tolist())}
 CHANNEL_NUM[DEFAULT_CHANNEL] = 0

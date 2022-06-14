@@ -40,3 +40,20 @@ def load_all_tma(tma, tma_path, offset=None):
         )
 
     return codex_slides, segmentation
+
+
+def load_raw_tma(tma, tma_path):
+    current_tma = ""
+    codex_slides = {}
+
+    for i, row in tma.iterrows():
+        # print(f"{row['TMA']}_{row['Row']}{row['Col']}")
+        if row["TMA"] != current_tma:
+            # print(f"Loading {cd.IMG_FULL[row['TMA']]}.")
+            img = imread(IMG_FULL[row["TMA"]])
+            current_tma = row["TMA"]
+
+        codex_slides[f"{row['TMA']}_{row['Row']}{row['Col']}"] = crop_tma(
+            img, row["Row"], row["Col"], nrows=row["Nrows"], ncols=row["Ncols"]
+        )
+    return codex_slides

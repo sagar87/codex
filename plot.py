@@ -1,9 +1,66 @@
 from typing import Union
 
 import matplotlib.pyplot as plt
+from stardist.plot import render_label
 
 from codex.experiment import Codex
-from codex.helper import DEFAULT_CHANNEL
+from codex.helper import DEFAULT_CHANNEL, DEFAULT_SEGMENTATION
+
+
+def plot_labeled_slide(
+    experiment,
+    df,
+    cell_filter=None,
+    xlim=[1000, 1200],
+    ylim=[1000, 1200],
+    preprocess=lambda x: x,
+    annotate=True,
+    ax=None,
+):
+    full_slide = preprocess(experiment.get_slide()).copy()
+    segmentation = experiment.get_slide(DEFAULT_SEGMENTATION).copy()
+    if ax is None:
+        fig = plt.figure(figsize=(24, 24))
+        ax = plt.gca()
+
+    cell_ids = []
+    if cell_filter is not None:
+        sub = df[cell_filter]
+        sub_border = df[~cell_filter]
+    else:
+        sub = df
+        sub_border = df
+
+    sub = sub[
+        (sub.x < xlim[1]) & (sub.x > xlim[0]) & (sub.y < ylim[1]) & (sub.y > ylim[0])
+    ]
+    sub_border = sub_border[
+        (sub_border.x < xlim[1])
+        & (sub_border.x > xlim[0])
+        & (sub_border.y < ylim[1])
+        & (sub_border.y > ylim[0])
+    ]
+
+    if annotate:
+        for i, row in sub.iterrows():
+            ax.text(row["x"], row["y"], s=f"{int(row['id'])}", color="w")
+            cell_ids.append(int(row["id"]))
+        # segmentation[segmentation==row['id']] = 0
+
+    sub_pic = segmentation[xlim[0] : xlim[1], ylim[0] : ylim[1]]
+
+    # print(sub_pic[sub_pic>0].min(), sub_pic.max())
+    if cell_filter is not None:
+        for i, row in sub_border.iterrows():
+            # print(row['id'])
+            segmentation[segmentation == row["id"]] = 0
+
+    labeled = render_label(segmentation, full_slide)
+    ax.imshow(labeled)
+    ax.set_xlim(xlim)
+    ax.set_ylim(ylim)
+    return ax
+
 
 # def show_slide(
 #     experiment: Codex,
@@ -62,10 +119,8 @@ from codex.helper import DEFAULT_CHANNEL
 #     return ax
 
 
-def show_tiles_on_slide(
-    experiment: Codex,
-    name: Union[None, str] = DEFAULT_CHANNEL,
-    ax: plt.Axes = None,
+def plot_tiles_on_slide(
+    experiment: Codex, name: Union[None, str] = DEFAULT_CHANNEL, ax: plt.Axes = None,
 ) -> plt.Axes:
     """
     Plots the full slide with all slides.
@@ -102,7 +157,7 @@ def show_tiles_on_slide(
     return ax
 
 
-def show_tile_location(
+def plot_tile_location(
     experiment: Codex,
     x: int,
     y: int,
@@ -124,10 +179,7 @@ def show_tile_location(
     ax.vlines(xx, yy[0], yy[1], color="w")
     ax.hlines(yy, xx[0], xx[1], color="w")
     ax.set_xlim(
-        [
-            0,
-            slide.shape[1],
-        ]
+        [0, slide.shape[1],]
     )
     ax.set_ylim([slide.shape[0], 0])
 

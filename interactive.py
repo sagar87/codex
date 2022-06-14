@@ -14,7 +14,7 @@ def interactive_tile(
     experiment: Codex,
     x: int,
     y: int,
-    names: list = [DEFAULT_CHANNEL, "CD4", "CD8"],
+    names: list = [DEFAULT_CHANNEL],
     frame_height: int = 200,
     frame_width: int = 200,
     colorbar: bool = False,
@@ -62,7 +62,7 @@ def interactive_labeled_tile(
     experiment: Codex,
     x: int,
     y: int,
-    names: list = [DEFAULT_CHANNEL, "BCL6", "Myc"],
+    names: list = [DEFAULT_CHANNEL],
     frame_height: int = 200,
     frame_width: int = 200,
     colorbar: bool = False,
@@ -196,7 +196,7 @@ def interactive_labeled_slide(
     xmax: int = 1200,
     ymin: int = 1000,
     ymax: int = 1200,
-    names: list = [DEFAULT_CHANNEL, "BCL6", "Myc"],
+    names: list = [DEFAULT_CHANNEL],
     frame_height: int = 200,
     frame_width: int = 200,
     colorbar: bool = False,
@@ -214,7 +214,8 @@ def interactive_labeled_slide(
     sub = df[(df.x > xmin) & (df.x < xmax) & (df.y > ymin) & (df.y < ymax)]
 
     for i, name in enumerate(names):
-        im = experiment.get_slide(name=name)
+        # im = experiment.get_slide(name=name)
+        im = experiment.get_slide_overlay(name=name)[..., xmin:xmax, ymin:ymax]
 
         p = bebi103.image.imshow(
             im,

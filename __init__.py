@@ -14,9 +14,9 @@ from codex.interactive import (
     interactive_slide,
     interactive_tile,
 )
-from codex.plot import show_tile_location, show_tiles_on_slide
+from codex.plot import plot_labeled_slide, plot_tile_location, plot_tiles_on_slide
 from codex.quantify import quantify_segmentation
-from codex.util import clahe, load_all_tma
+from codex.util import clahe, load_all_tma, load_raw_tma
 
 __all__ = [
     "Codex",
@@ -24,11 +24,13 @@ __all__ = [
     "clahe",
     "load_tma",
     "load_all_tma",
+    "load_raw_tma",
     "show_slide",
     "show_tile",
     "show_labeled_tile",
-    "show_tiles_on_slide",
-    "show_tile_location",
+    "plot_tiles_on_slide",
+    "plot_tile_location",
+    "plot_labeled_slide",
     "interactive_tile",
     "interactive_labeled_tile",
     "interactive_labeled_slide",
